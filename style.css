@@ -1,0 +1,344 @@
+/* =====================================================
+   MINICARTRANS - STYLE GLOBAL PROPRE
+===================================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#f3f4f6;
+    color:#111827;
+    font-family:Arial,sans-serif;
+}
+
+/* MENU */
+
+.sidebar{
+    width:230px;
+    height:100vh;
+    position:fixed;
+    top:0;
+    left:0;
+    background:#0f172a;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+}
+
+.logo{
+    padding:22px 20px;
+    font-size:22px;
+    font-weight:bold;
+    color:#60a5fa;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.menu-header{
+    padding:18px 20px 8px;
+    font-size:12px;
+    color:#94a3b8;
+    font-weight:bold;
+}
+
+.menu-links{
+    display:flex;
+    flex-direction:column;
+}
+
+.menu-links a{
+    color:white;
+    text-decoration:none;
+    padding:14px 20px;
+    font-size:15px;
+    border-left:4px solid transparent;
+}
+
+.menu-links a:hover,
+.menu-links a.active{
+    background:#1e293b;
+    border-left-color:#2563eb;
+}
+
+.menu-bottom{
+    margin-top:auto;
+    padding:18px;
+    border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.logout{
+    color:white;
+    text-decoration:none;
+    display:block;
+    margin-bottom:15px;
+}
+
+.version{
+    font-size:11px;
+    color:#94a3b8;
+    text-align:center;
+}
+
+/* PAGE */
+
+.main{
+    margin-left:230px;
+    padding:24px;
+}
+
+h1{
+    margin:0 0 22px;
+    font-size:28px;
+}
+
+h2{
+    margin:0 0 15px;
+}
+
+/* BLOCS */
+
+.card,
+.form-card,
+.driver-card,
+.patient-card,
+.filter-card,
+.day-card,
+.course-card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* FORMULAIRES */
+
+label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+    color:#374151;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:11px;
+    border-radius:9px;
+    border:1px solid #d1d5db;
+    margin-bottom:13px;
+    font-size:14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:#2563eb;
+}
+
+/* BOUTONS */
+
+.btn{
+    display:inline-block;
+    padding:10px 15px;
+    border-radius:9px;
+    text-decoration:none;
+    border:none;
+    color:white;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn-back{ background:#2563eb; }
+.btn-add{ background:#16a34a; }
+.btn-edit{ background:#f59e0b; }
+.btn-delete{ background:#dc2626; }
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:15px;
+}
+
+/* TABLE */
+
+.table-scroll{
+    overflow-x:auto;
+}
+
+.table-pro{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.table-pro th{
+    background:#111827;
+    color:white;
+    padding:12px;
+    text-align:left;
+    font-size:14px;
+}
+
+.table-pro td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:14px;
+}
+
+/* BADGES */
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:7px;
+    color:white;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.badge-prevu{ background:#2563eb; }
+.badge-cours{ background:#f59e0b; }
+.badge-termine{ background:#16a34a; }
+
+/* INFOS */
+
+.driver-name,
+.patient-name{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:14px;
+}
+
+.driver-info,
+.patient-info,
+.course-info{
+    margin-bottom:9px;
+    color:#374151;
+    line-height:1.5;
+}
+
+/* MOBILE CHAUFFEUR */
+
+.mobile-page{
+    margin:0;
+    padding:15px;
+    background:#f3f4f6;
+}
+
+.mobile-header{
+    background:#111827;
+    color:white;
+    padding:20px;
+    border-radius:14px;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.mobile-header h1{
+    color:white;
+    margin:0;
+    font-size:24px;
+}
+
+.btn-mobile{
+    display:block;
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    color:white;
+    text-align:center;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.call{ background:#16a34a; }
+.gps{ background:#2563eb; }
+.start{ background:#f59e0b; }
+.finish{ background:#111827; }
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    margin-top:30px;
+    color:#9ca3af;
+    font-size:11px;
+    line-height:1.8;
+}
+
+.footer a{
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+    .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+
+    .main{
+        margin-left:0;
+        padding:14px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+        text-align:center;
+    }
+
+    .table-pro th,
+    .table-pro td{
+        font-size:12px;
+        padding:8px;
+    }
+}
+.btn-delete{
+    background:#fee2e2;
+    color:#dc2626;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13px;
+    text-decoration:none;
+    margin-left:6px;
+}
+.btn-edit{
+    background:#dbeafe;
+    color:#1d4ed8;
+    padding:10px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    display:inline-block;
+    margin-right:6px;
+}
+
+.btn-delete{
+    background:#fee2e2;
+    color:#991b1b;
+    padding:10px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    display:inline-block;
+}

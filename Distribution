@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<installer-gui-script minSpecVersion="1">
+    <pkg-ref id="com.dortania.opencore-legacy-patcher">
+        <bundle-version>
+            <bundle CFBundleShortVersionString="2.4.1" CFBundleVersion="2.4.1" id="com.dortania.opencore-legacy-patcher" path="Library/Application Support/Dortania/OpenCore-Patcher.app"/>
+        </bundle-version>
+    </pkg-ref>
+    <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.dortania.opencore-legacy-patcher"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.dortania.opencore-legacy-patcher" visible="false">
+        <pkg-ref id="com.dortania.opencore-legacy-patcher"/>
+    </choice>
+    <pkg-ref id="com.dortania.opencore-legacy-patcher" version="2.4.1" onConclusion="none" installKBytes="793512">#OpenCore-Patcher.pkg</pkg-ref>
+    <title>OpenCore Legacy Patcher</title>
+    <background file="BACKGROUND.png" alignment="bottomleft" scaling="tofit"/>
+    <background-darkAqua file="BACKGROUND.png" alignment="bottomleft" scaling="tofit"/>
+    <welcome file="WELCOME.html" mimetype="text/html"/>
+</installer-gui-script>

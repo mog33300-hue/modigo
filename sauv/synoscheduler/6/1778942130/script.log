@@ -1,0 +1,1 @@
+/usr/local/bin/mysqldump --host=localhost --user=admin --password='MiniCar2025!' minicartrans > /volume1/backup_minicartrans/backup_$(date +\%Y\%m\%d_\%H\%M\%S).sql
