@@ -2,21 +2,53 @@
 $current = basename($_SERVER['PHP_SELF']);
 
 if (!function_exists('modigo_active')) {
-    function modigo_active(string $page): string {
+    function modigo_active(string $page): string
+    {
         global $current;
         return $current === $page ? 'active' : '';
     }
 }
 
-$menu_societe = $_SESSION['societe_nom'] ?? 'MODIGO';
-$menu_prenom = $_SESSION['prenom'] ?? 'Utilisateur';
-$menu_role = $_SESSION['role'] ?? '';
+/*
+ * Identité affichée dans MODIGO
+ *
+ * On privilégie l'adresse e-mail réelle du compte connecté afin
+ * d'éviter l'affichage d'un ancien nom de démonstration.
+ */
+$menu_email = trim((string) (
+    $user['email']
+    ?? $_SESSION['email']
+    ?? ''
+));
+
+$menu_societe = trim((string) (
+    $user['societe_nom']
+    ?? $_SESSION['societe_nom']
+    ?? 'MODIGO'
+));
+
+$menu_utilisateur = $menu_email !== ''
+    ? $menu_email
+    : 'Utilisateur connecté';
+
+$menu_initiale = strtoupper(
+    function_exists('mb_substr')
+        ? mb_substr($menu_utilisateur, 0, 1, 'UTF-8')
+        : substr($menu_utilisateur, 0, 1)
+);
+
+/*
+ * Le dashboard utilise la variable $prenom dans son encart supérieur.
+ * Cette affectation garantit que le même compte réel est affiché partout.
+ */
+$prenom = $menu_utilisateur;
 ?>
 
 <aside class="sidebar">
 
     <div class="brand">
         <div class="brand-icon">🚑</div>
+
         <div>
             <h1>MODIGO</h1>
             <p>Transport sanitaire intelligent</p>
@@ -24,13 +56,21 @@ $menu_role = $_SESSION['role'] ?? '';
     </div>
 
     <div class="sidebar-user">
+
         <div class="sidebar-user-avatar">
-            <?= strtoupper(substr($menu_prenom, 0, 1)) ?>
+            <?= htmlspecialchars($menu_initiale, ENT_QUOTES, 'UTF-8') ?>
         </div>
+
         <div>
-            <strong><?= htmlspecialchars($menu_prenom) ?></strong>
-            <span><?= htmlspecialchars($menu_societe) ?></span>
+            <strong>
+                <?= htmlspecialchars($menu_utilisateur, ENT_QUOTES, 'UTF-8') ?>
+            </strong>
+
+            <span>
+                <?= htmlspecialchars($menu_societe, ENT_QUOTES, 'UTF-8') ?>
+            </span>
         </div>
+
     </div>
 
     <nav class="nav">
@@ -71,7 +111,6 @@ $menu_role = $_SESSION['role'] ?? '';
             📊 Historique
         </a>
 
-
         <a href="about.php" class="<?= modigo_active('about.php') ?>">
             ℹ️ À propos
         </a>
@@ -83,14 +122,25 @@ $menu_role = $_SESSION['role'] ?? '';
     </nav>
 
     <div class="sidebar-status">
-        <div><span class="service-dot online"></span> Base de données</div>
-        <div><span class="service-dot online"></span> MODIGO actif</div>
-        <div><span class="service-dot online"></span> OpenStreetMap</div>
+        <div>
+            <span class="service-dot online"></span>
+            Base de données
+        </div>
+
+        <div>
+            <span class="service-dot online"></span>
+            MODIGO actif
+        </div>
+
+        <div>
+            <span class="service-dot online"></span>
+            OpenStreetMap
+        </div>
     </div>
 
     <div class="sidebar-version">
         <strong>MODIGO V1.0 Stable</strong>
-        <span>Build 2026.07.19</span>
+        <span>Build 2026.07.30</span>
     </div>
 
 </aside>

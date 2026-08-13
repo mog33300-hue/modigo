@@ -162,7 +162,6 @@ include __DIR__ . '/includes/menu.php';
     <?php endif; ?>
 
     <form method="post" id="courseForm" autocomplete="off">
-        <input type="hidden" name="submit_action" id="submitAction" value="create">
         <div class="cc-grid">
             <section class="cc-card">
                 <div class="cc-card-head">
@@ -252,6 +251,7 @@ include __DIR__ . '/includes/menu.php';
 
                 <button
                     type="submit"
+                    name="submit_action"
                     value="waiting"
                     class="cc-btn waiting"
                 >
@@ -260,6 +260,7 @@ include __DIR__ . '/includes/menu.php';
 
                 <button
                     type="submit"
+                    name="submit_action"
                     value="create"
                     class="cc-btn primary"
                     id="submitButton"
@@ -348,10 +349,8 @@ include __DIR__ . '/includes/menu.php';
 
     courseForm.addEventListener('submit', function(event){
         const submitter = event.submitter;
-        const action = submitter && submitter.value === 'waiting' ? 'waiting' : 'create';
-        document.getElementById('submitAction').value = action;
 
-        if (action === 'waiting') {
+        if (submitter && submitter.value === 'waiting') {
             if (!confirm('Enregistrer cette course en attente d’affectation ?')) {
                 event.preventDefault();
                 return;
@@ -365,7 +364,7 @@ include __DIR__ . '/includes/menu.php';
         });
 
         if (submitter) {
-            submitter.textContent = action === 'waiting'
+            submitter.textContent = submitter.value === 'waiting'
                 ? '⏳ Enregistrement en attente...'
                 : '⏳ Création en cours...';
         }

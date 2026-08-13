@@ -60,17 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $chauffeur_id = (int)$values['chauffeur_id'];
     $vehicle_id   = (int)$values['vehicle_id'];
 
-    $submit_action = (string)($_POST['submit_action'] ?? 'create');
-    $save_waiting = $submit_action === 'waiting';
-
-    if ($save_waiting) {
-        $values['statut'] = 'prévue';
-    }
-
-    if ($patient_id <= 0 || trim($values['date_course']) === '') {
-        $error = 'Veuillez sélectionner un patient et une date.';
-    } elseif (!$save_waiting && $chauffeur_id <= 0) {
-        $error = 'Veuillez sélectionner un chauffeur ou utiliser « Enregistrer en attente ».';
+    if ($patient_id <= 0 || $chauffeur_id <= 0 || trim($values['date_course']) === '') {
+        $error = 'Veuillez sélectionner un patient, un chauffeur et une date.';
     } else {
         try {
             $stmt = $pdo->prepare("SELECT prenom, nom, telephone FROM patients WHERE id = ? AND societe_id = ? LIMIT 1");
@@ -81,13 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Patient introuvable.');
             }
 
-            if ($chauffeur_id > 0) {
-                $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ? AND role = 'chauffeur' AND societe_id = ? LIMIT 1");
-                $stmt->execute([$chauffeur_id, $societe_id]);
-
-                if (!$stmt->fetchColumn()) {
-                    throw new Exception('Chauffeur introuvable.');
-                }
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ? AND role = 'chauffeur' AND societe_id = ? LIMIT 1");
+            $stmt->execute([$chauffeur_id, $societe_id]);
+            if (!$stmt->fetchColumn()) {
+                throw new Exception('Chauffeur introuvable.');
             }
 
             if ($vehicle_id > 0) {
@@ -108,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $patient_id,
                 $client_nom,
                 $telephone,
-                $chauffeur_id > 0 ? $chauffeur_id : null,
+                $chauffeur_id,
                 $vehicle_id > 0 ? $vehicle_id : null,
                 trim($values['date_course']),
                 trim($values['heure_pickup']),
@@ -120,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 trim($values['observations']),
             ]);
 
-            header('Location: courses.php?' . ($save_waiting ? 'waiting=1' : 'created=1'));
+            header('Location: courses.php?created=1');
             exit;
         } catch (Throwable $e) {
             $error = $e->getMessage();
@@ -132,7 +120,7 @@ $page_title = 'MODIGO - Nouvelle course';
 $modigo_page_class = 'create-course-premium';
 $modigo_extra_head = <<<'HTML'
 <style>
-.create-course-premium{background:radial-gradient(circle at 80% 10%,rgba(37,99,235,.22),transparent 30%),linear-gradient(135deg,#0f1d3b,#173a82);color:#fff}.create-course-premium .main{padding:26px 28px 34px}.cc-wrap{max-width:1550px;margin:0 auto}.cc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}.cc-eyebrow{display:block;color:#bfdbfe;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.cc-top h1{margin:7px 0 5px;font-size:34px;line-height:1.05}.cc-top p{color:#dbeafe;font-size:14px}.cc-version{padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.08);font-size:12px;font-weight:900;white-space:nowrap}.cc-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:17px}.cc-step{display:flex;align-items:center;gap:10px;padding:13px 14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.06)}.cc-step-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.12);font-size:17px}.cc-step strong{display:block;font-size:12px}.cc-step span{display:block;margin-top:2px;color:#a9c6f8;font-size:10px}.cc-alert{margin-bottom:16px;padding:15px 17px;border:1px solid rgba(248,113,113,.45);border-radius:15px;background:rgba(127,29,29,.45);color:#fee2e2;font-weight:800}.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cc-card{padding:20px;border:1px solid rgba(255,255,255,.13);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.065));box-shadow:0 16px 40px rgba(0,0,0,.16)}.cc-card.full{grid-column:1/-1}.cc-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.cc-card-title{display:flex;align-items:center;gap:10px}.cc-card-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);font-size:19px}.cc-card h2{font-size:18px}.cc-card small{color:#a9c6f8;font-size:11px}.cc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.cc-field.full{grid-column:1/-1}.cc-field label{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:#dbeafe;font-size:11px;font-weight:900}.cc-required{color:#fda4af}.cc-input{width:100%;min-height:44px;padding:11px 13px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(9,21,49,.58);color:#fff;font:inherit;font-size:13px;outline:none}.cc-input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(59,130,246,.16)}.cc-input::placeholder{color:#7893bf}.cc-input option{color:#111827;background:#fff}.cc-address-row{display:grid;grid-template-columns:1fr auto;gap:8px}.cc-map-btn{min-width:44px;padding:0 11px;border:1px solid rgba(255,255,255,.17);border-radius:13px;background:rgba(255,255,255,.09);color:#fff;cursor:pointer}.cc-map-btn:hover{background:rgba(255,255,255,.16)}.cc-patient-preview{display:none;margin-top:12px;padding:12px;border:1px solid rgba(96,165,250,.25);border-radius:13px;background:rgba(30,64,175,.18);font-size:12px;line-height:1.55}.cc-patient-preview.visible{display:block}.cc-preview-name{font-weight:900}.cc-trip-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}.cc-summary-box{padding:12px;border-radius:13px;background:rgba(15,23,42,.34);border:1px solid rgba(255,255,255,.09)}.cc-summary-box span{display:block;color:#a9c6f8;font-size:10px;font-weight:800;text-transform:uppercase}.cc-summary-box strong{display:block;margin-top:5px;font-size:13px}.cc-actions{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:18px;padding:14px 16px;border:1px solid rgba(255,255,255,.15);border-radius:18px;background:rgba(13,31,70,.92);box-shadow:0 18px 45px rgba(0,0,0,.28);backdrop-filter:blur(16px)}.cc-help{color:#bcd2f8;font-size:12px}.cc-buttons{display:flex;gap:9px}.cc-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:10px 15px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(255,255,255,.09);color:#fff;text-decoration:none;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.cc-btn:hover{background:rgba(255,255,255,.16)}.cc-btn.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:#60a5fa;min-width:190px}.cc-btn.waiting{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:#fbbf24;color:#fff;min-width:190px}.cc-btn.back{background:rgba(255,255,255,.08)}.cc-footer{display:flex;justify-content:space-between;gap:15px;padding:15px 3px 0;color:#8eaddd;font-size:11px}@media(max-width:1150px){.cc-progress{grid-template-columns:repeat(2,1fr)}.cc-grid{grid-template-columns:1fr}.cc-card.full{grid-column:auto}}@media(max-width:760px){.create-course-premium .main{padding:16px}.cc-top,.cc-actions,.cc-footer{flex-direction:column;align-items:stretch}.cc-top h1{font-size:28px}.cc-progress,.cc-form-grid,.cc-trip-summary{grid-template-columns:1fr}.cc-field.full{grid-column:auto}.cc-buttons{display:grid;grid-template-columns:1fr}.cc-btn{width:100%}.cc-version{align-self:flex-start}}
+.create-course-premium{background:radial-gradient(circle at 80% 10%,rgba(37,99,235,.22),transparent 30%),linear-gradient(135deg,#0f1d3b,#173a82);color:#fff}.create-course-premium .main{padding:26px 28px 34px}.cc-wrap{max-width:1550px;margin:0 auto}.cc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}.cc-eyebrow{display:block;color:#bfdbfe;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.cc-top h1{margin:7px 0 5px;font-size:34px;line-height:1.05}.cc-top p{color:#dbeafe;font-size:14px}.cc-version{padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.08);font-size:12px;font-weight:900;white-space:nowrap}.cc-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:17px}.cc-step{display:flex;align-items:center;gap:10px;padding:13px 14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.06)}.cc-step-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.12);font-size:17px}.cc-step strong{display:block;font-size:12px}.cc-step span{display:block;margin-top:2px;color:#a9c6f8;font-size:10px}.cc-alert{margin-bottom:16px;padding:15px 17px;border:1px solid rgba(248,113,113,.45);border-radius:15px;background:rgba(127,29,29,.45);color:#fee2e2;font-weight:800}.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cc-card{padding:20px;border:1px solid rgba(255,255,255,.13);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.065));box-shadow:0 16px 40px rgba(0,0,0,.16)}.cc-card.full{grid-column:1/-1}.cc-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.cc-card-title{display:flex;align-items:center;gap:10px}.cc-card-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);font-size:19px}.cc-card h2{font-size:18px}.cc-card small{color:#a9c6f8;font-size:11px}.cc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.cc-field.full{grid-column:1/-1}.cc-field label{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:#dbeafe;font-size:11px;font-weight:900}.cc-required{color:#fda4af}.cc-input{width:100%;min-height:44px;padding:11px 13px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(9,21,49,.58);color:#fff;font:inherit;font-size:13px;outline:none}.cc-input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(59,130,246,.16)}.cc-input::placeholder{color:#7893bf}.cc-input option{color:#111827;background:#fff}.cc-address-row{display:grid;grid-template-columns:1fr auto;gap:8px}.cc-map-btn{min-width:44px;padding:0 11px;border:1px solid rgba(255,255,255,.17);border-radius:13px;background:rgba(255,255,255,.09);color:#fff;cursor:pointer}.cc-map-btn:hover{background:rgba(255,255,255,.16)}.cc-patient-preview{display:none;margin-top:12px;padding:12px;border:1px solid rgba(96,165,250,.25);border-radius:13px;background:rgba(30,64,175,.18);font-size:12px;line-height:1.55}.cc-patient-preview.visible{display:block}.cc-preview-name{font-weight:900}.cc-trip-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}.cc-summary-box{padding:12px;border-radius:13px;background:rgba(15,23,42,.34);border:1px solid rgba(255,255,255,.09)}.cc-summary-box span{display:block;color:#a9c6f8;font-size:10px;font-weight:800;text-transform:uppercase}.cc-summary-box strong{display:block;margin-top:5px;font-size:13px}.cc-actions{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:18px;padding:14px 16px;border:1px solid rgba(255,255,255,.15);border-radius:18px;background:rgba(13,31,70,.92);box-shadow:0 18px 45px rgba(0,0,0,.28);backdrop-filter:blur(16px)}.cc-help{color:#bcd2f8;font-size:12px}.cc-buttons{display:flex;gap:9px}.cc-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:10px 15px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(255,255,255,.09);color:#fff;text-decoration:none;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.cc-btn:hover{background:rgba(255,255,255,.16)}.cc-btn.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:#60a5fa;min-width:190px}.cc-footer{display:flex;justify-content:space-between;gap:15px;padding:15px 3px 0;color:#8eaddd;font-size:11px}@media(max-width:1150px){.cc-progress{grid-template-columns:repeat(2,1fr)}.cc-grid{grid-template-columns:1fr}.cc-card.full{grid-column:auto}}@media(max-width:760px){.create-course-premium .main{padding:16px}.cc-top,.cc-actions,.cc-footer{flex-direction:column;align-items:stretch}.cc-top h1{font-size:28px}.cc-progress,.cc-form-grid,.cc-trip-summary{grid-template-columns:1fr}.cc-field.full{grid-column:auto}.cc-buttons{display:grid;grid-template-columns:1fr}.cc-btn{width:100%}.cc-version{align-self:flex-start}}
 </style>
 HTML;
 
@@ -162,7 +150,6 @@ include __DIR__ . '/includes/menu.php';
     <?php endif; ?>
 
     <form method="post" id="courseForm" autocomplete="off">
-        <input type="hidden" name="submit_action" id="submitAction" value="create">
         <div class="cc-grid">
             <section class="cc-card">
                 <div class="cc-card-head">
@@ -222,7 +209,7 @@ include __DIR__ . '/includes/menu.php';
             <section class="cc-card">
                 <div class="cc-card-head"><div class="cc-card-title"><div class="cc-card-icon">🚑</div><div><h2>Affectation</h2><small>Ressources opérationnelles</small></div></div></div>
                 <div class="cc-form-grid">
-                    <div class="cc-field"><label for="chauffeur_id"><span>Chauffeur</span><span>Facultatif en attente</span></label><select class="cc-input" name="chauffeur_id" id="chauffeur_id"><option value="">À affecter plus tard</option><?php foreach ($chauffeurs as $chauffeur): ?><option value="<?= (int)$chauffeur['id'] ?>" <?= $values['chauffeur_id'] === (string)$chauffeur['id'] ? 'selected' : '' ?>><?= h(trim(($chauffeur['prenom'] ?? '') . ' ' . ($chauffeur['nom'] ?? ''))) ?></option><?php endforeach; ?></select></div>
+                    <div class="cc-field"><label for="chauffeur_id"><span>Chauffeur</span><span class="cc-required">Obligatoire</span></label><select class="cc-input" name="chauffeur_id" id="chauffeur_id" required><option value="">Choisir un chauffeur</option><?php foreach ($chauffeurs as $chauffeur): ?><option value="<?= (int)$chauffeur['id'] ?>" <?= $values['chauffeur_id'] === (string)$chauffeur['id'] ? 'selected' : '' ?>><?= h(trim(($chauffeur['prenom'] ?? '') . ' ' . ($chauffeur['nom'] ?? ''))) ?></option><?php endforeach; ?></select></div>
                     <div class="cc-field"><label for="vehicle_id"><span>Véhicule</span></label><select class="cc-input" name="vehicle_id" id="vehicle_id"><option value="">Aucun véhicule</option><?php foreach ($vehicles as $vehicle): ?><option value="<?= (int)$vehicle['id'] ?>" <?= $values['vehicle_id'] === (string)$vehicle['id'] ? 'selected' : '' ?>><?= h($vehicle['plate'] ?? '') ?><?= !empty($vehicle['name']) ? ' — ' . h($vehicle['name']) : '' ?></option><?php endforeach; ?></select></div>
                 </div>
             </section>
@@ -243,30 +230,8 @@ include __DIR__ . '/includes/menu.php';
         </div>
 
         <div class="cc-actions">
-            <div class="cc-help">
-                Patient et date sont obligatoires. Sans chauffeur, utilisez « Enregistrer en attente ».
-            </div>
-
-            <div class="cc-buttons">
-                <a href="courses.php" class="cc-btn back js-leave-form">← Retour aux courses</a>
-
-                <button
-                    type="submit"
-                    value="waiting"
-                    class="cc-btn waiting"
-                >
-                    🕒 Enregistrer en attente
-                </button>
-
-                <button
-                    type="submit"
-                    value="create"
-                    class="cc-btn primary"
-                    id="submitButton"
-                >
-                    💾 Créer et affecter
-                </button>
-            </div>
+            <div class="cc-help">Les champs Patient, Chauffeur et Date sont obligatoires. Vérifiez les adresses avant validation.</div>
+            <div class="cc-buttons"><a href="courses.php" class="cc-btn">← Annuler</a><button type="submit" class="cc-btn primary" id="submitButton">💾 Créer la course</button></div>
         </div>
     </form>
 
@@ -323,59 +288,10 @@ include __DIR__ . '/includes/menu.php';
         });
     });
 
-    const courseForm = document.getElementById('courseForm');
-    let formDirty = false;
-    let formSubmitting = false;
-
-    courseForm.addEventListener('input', function(){
-        formDirty = true;
-    });
-
-    courseForm.addEventListener('change', function(){
-        formDirty = true;
-    });
-
-    document.querySelectorAll('.js-leave-form').forEach(link => {
-        link.addEventListener('click', function(event){
-            if (
-                formDirty &&
-                !confirm('Quitter la création ? Les informations non enregistrées seront perdues.')
-            ) {
-                event.preventDefault();
-            }
-        });
-    });
-
-    courseForm.addEventListener('submit', function(event){
-        const submitter = event.submitter;
-        const action = submitter && submitter.value === 'waiting' ? 'waiting' : 'create';
-        document.getElementById('submitAction').value = action;
-
-        if (action === 'waiting') {
-            if (!confirm('Enregistrer cette course en attente d’affectation ?')) {
-                event.preventDefault();
-                return;
-            }
-        }
-
-        formSubmitting = true;
-
-        courseForm.querySelectorAll('button[type="submit"]').forEach(button => {
-            button.disabled = true;
-        });
-
-        if (submitter) {
-            submitter.textContent = action === 'waiting'
-                ? '⏳ Enregistrement en attente...'
-                : '⏳ Création en cours...';
-        }
-    });
-
-    window.addEventListener('beforeunload', function(event){
-        if (formDirty && !formSubmitting) {
-            event.preventDefault();
-            event.returnValue = '';
-        }
+    document.getElementById('courseForm').addEventListener('submit', function(){
+        const button = document.getElementById('submitButton');
+        button.disabled = true;
+        button.textContent = '⏳ Création en cours...';
     });
 
     updatePatient();

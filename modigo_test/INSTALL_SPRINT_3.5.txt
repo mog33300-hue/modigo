@@ -1,0 +1,30 @@
+MODIGO - SPRINT 3.5 TEST 1
+Date : 29/07/2026
+
+CONTENU DE CETTE LIVRAISON
+- Base complète MODIGO récupérée depuis la dernière archive disponible.
+- Correction save_position.php : authentification par session ou token QR Code.
+- Réponse GPS toujours en JSON.
+- Mise à jour GPS limitée au chauffeur et à la société concernés.
+
+INSTALLATION CONSEILLÉE
+1. Faire une sauvegarde du dossier /volume1/web/minicartrans.
+2. Faire une sauvegarde de la base MariaDB.
+3. Décompresser ce ZIP dans un dossier de test, par exemple /volume1/web/modigo_test.
+4. Conserver le config.php adapté au NAS si les identifiants SQL sont différents.
+5. Tester la connexion administrateur, l'espace chauffeur, le QR Code et le GPS.
+6. Ne pas supprimer la version actuelle avant validation.
+
+TESTS PRIORITAIRES
+[ ] Connexion administrateur
+[ ] Affichage du Centre de supervision
+[ ] Ouverture espace chauffeur par QR Code
+[ ] Autorisation GPS sur téléphone
+[ ] Réception JSON sans erreur Unexpected token <
+[ ] Position visible dans le Centre GPS
+[ ] Actualisation manuelle des missions
+[ ] Création et modification d'une course
+[ ] Patients, chauffeurs et historique accessibles
+
+IMPORTANT
+Cette version est une version de test. Installez-la dans un dossier séparé avant remplacement de la version active.

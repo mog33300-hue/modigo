@@ -514,8 +514,8 @@ class="btn btn-start"
 
 <a
 href="chauffeur_courses.php?action=depart&id=<?= intval($c['id']) ?>&waze=1"
-class="btn btn-start js-start-course"
-data-course-id="<?= intval($c['id']) ?>"
+class="btn btn-start"
+onclick="return confirm('Démarrer cette course ?');"
 >
 🚗 Démarrer
 </a>
@@ -572,59 +572,5 @@ function stopGps(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);
 document.getElementById('gpsRetry').addEventListener('click',()=>{if(currentService==='hors_service')setService('en_service');else startGps();});
 window.addEventListener('online',()=>{networkEl.textContent=networkType();if(currentService!=='hors_service')startGps();});window.addEventListener('offline',()=>{networkEl.textContent='hors ligne';setGpsState('error','🔴 Réseau indisponible');});
 if(navigator.getBattery){navigator.getBattery().then(b=>{const upd=()=>batteryLevel=Math.round(b.level*100);upd();b.addEventListener('levelchange',upd);}).catch(()=>{});}
-
-document.querySelectorAll('.js-start-course').forEach(link=>{
-    link.addEventListener('click',function(event){
-        event.preventDefault();
-
-        if(!confirm('Démarrer cette course ?')){
-            return;
-        }
-
-        const target=this.href;
-        const courseId=parseInt(this.dataset.courseId||'0',10);
-
-        const goToWaze=()=>{
-            window.location.href=target;
-        };
-
-        if(!navigator.geolocation || !window.isSecureContext){
-            goToWaze();
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            async position=>{
-                const c=position.coords;
-
-                try{
-                    await postData({
-                        action:'position',
-                        course_id:courseId,
-                        lat:c.latitude,
-                        lng:c.longitude,
-                        accuracy:c.accuracy,
-                        speed:c.speed===null?null:c.speed*3.6,
-                        heading:c.heading,
-                        battery:batteryLevel,
-                        network:networkType(),
-                        status:'en_service'
-                    });
-                }catch(e){
-                    console.warn('Position initiale non transmise :',e);
-                }
-
-                goToWaze();
-            },
-            goToWaze,
-            {
-                enableHighAccuracy:true,
-                maximumAge:5000,
-                timeout:12000
-            }
-        );
-    });
-});
-
 networkEl.textContent=networkType();
 </script></body></html>

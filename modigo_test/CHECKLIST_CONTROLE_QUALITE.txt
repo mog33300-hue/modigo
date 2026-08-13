@@ -1,0 +1,18 @@
+MODIGO V1.0 — CHECKLIST DE CONTRÔLE QUALITÉ
+
+[ ] Connexion / déconnexion
+[ ] Dashboard Premium V2
+[ ] Courses : liste, filtre, modifier, supprimer
+[ ] Nouvelle course : création complète
+[ ] Patients : recherche, ajout, modification, suppression
+[ ] Chauffeurs : ajout, modification
+[ ] Véhicules : ajout, modification
+[ ] Planning : affichage, carte, impression
+[ ] GPS V2 : carte, missions sans GPS, positions disponibles
+[ ] Historique
+[ ] Bouton Retour sur les pages
+[ ] Responsive téléphone/tablette
+[ ] Export CSV / PDF
+[ ] Page À propos
+[ ] Sauvegarde SQL récente
+[ ] Sauvegarde ZIP récente

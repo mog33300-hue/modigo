@@ -75,7 +75,7 @@ if (
 $page_actuelle = basename($_SERVER['PHP_SELF']);
 
 if (
-    !in_array($_SESSION['role'] ?? '', ['admin','superadmin','chauffeur'], true) &&
+    !in_array($_SESSION['role'] ?? '', ['admin','superadmin']) &&
     $page_actuelle !== 'subscription.php' &&
     $page_actuelle !== 'payment.php' &&
     $page_actuelle !== 'payment_success.php' &&
@@ -99,7 +99,7 @@ $pages_autorisees_chauffeur = [
 
 if (
     $role === 'chauffeur' &&
-    !in_array($page_actuelle, $pages_autorisees_chauffeur, true)
+    !in_array($page_actuelle, $pages_autorisees_chauffeur)
 ) {
     header("Location: chauffeur_courses.php");
     exit;
